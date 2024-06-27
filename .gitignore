@@ -4,5 +4,6 @@
 *.code-workspace
 *.lock
 *.sw*
+.idea
 node_modules/*
 dist
