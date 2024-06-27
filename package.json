@@ -1,19 +1,19 @@
 {
   "name": "warpgate",
   "version": "1.0.0",
-  "description": "<h3 align=\"center\"> <img alt=\"GitHub release (latest by date)\" src=\"https://img.shields.io/github/downloads/trioderegion/warpgate/latest/total?color=blue&label=latest%20downloads\"> Reinforcements have arrived <img alt=\"GitHub all releases\" src=\"https://img.shields.io/github/downloads/trioderegion/warpgate/total?color=blue&label=total%20downloads\"> </h3>",
+  "description": "",
   "main": "scripts/warpgate.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trioderegion/warpgate.git"
+    "url": "git+https://github.com/IsendurHun/warpgate.git"
   },
   "keywords": [],
   "author": "",
   "license": "GPL3",
   "bugs": {
-    "url": "https://github.com/trioderegion/warpgate/issues"
+    "url": "https://github.com/IsendurHun/warpgate/issues"
   },
-  "homepage": "https://github.com/trioderegion/warpgate#readme",
+  "homepage": "https://github.com/IsendurHun/warpgate#readme",
   "devDependencies": {
     "@league-of-foundry-developers/foundry-vtt-types": ">=9",
     "better-docs": "^2.7.2",
