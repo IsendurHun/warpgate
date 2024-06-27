@@ -1,0 +1,8 @@
+*.swp
+*.swo
+*.orig
+*.code-workspace
+*.lock
+*.sw*
+node_modules/*
+dist

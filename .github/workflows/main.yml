@@ -1,0 +1,87 @@
+name: Release and Doc Creation
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      
+      - uses: actions/checkout@v3
+      - run: mkdir ./dist
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build:module
+
+      # for a FULL RELEASE
+      - name: Substitute Manifest and Download Links For Versioned Ones
+        if: "!github.event.release.prerelease"
+        id: sub_prerelease_manifest_version
+        uses: rajbos-actions/variable-substitution@v1.1
+        with:
+          files: './dist/${{github.event.repository.name}}/module.json'
+         
+        env:
+          version: ${{github.event.release.tag_name}}
+          url: https://github.com/${{github.repository}}
+          manifest: https://github.com/${{github.repository}}/releases/latest/download/module.json
+          download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip  
+
+      # Create a zip file with all files required by the module to add to the release
+      - run: (cp LICENSE dist/${{github.event.repository.name}}/LICENSE;cd dist/${{github.event.repository.name}}; zip -r module.zip *)
+
+      # Create a release for this specific version
+      - name: Update Release with Files
+        if: "!github.event.release.prerelease"
+        id: create_version_release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true # Set this to false if you want to prevent updating existing releases
+          name: ${{ github.event.release.name }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: './dist/${{github.event.repository.name}}/module.json, ./dist/${{github.event.repository.name}}/module.zip'
+          tag: ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }}
+  deploy:
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: mkdir ./dist
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build:docs
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload docs folder
+          path: './dist/docs'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
